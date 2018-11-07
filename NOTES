@@ -1,0 +1,98 @@
+Data definitions
+-------------------------------------------------------------------------
+
+A bit list [bl] is
+- () or
+- (listof bits)
+
+A [bit] is
+- 0 or
+- 1
+
+Some minikanren hints
+-------------------------------------------------------------------------
+
+the run* operator
+
+   run* returns '() if any of its goals 'g' fail '(run* (q) g ...).
+
+the fresh operator
+
+   Fresh binds new "fresh" variables. A variable is "fresh" when it
+   has no association. The expression (fresh (x ...) g ...)  succeeds
+   if all its goals 'g' succeed.
+
+the condi operator
+
+    The condi operator feels like conde but does not wait until all
+    the successful goals on a line are exhausted before it tries the
+    next line.
+
+the all operator
+
+    The all operator succeeds if all of its goal succeeds.
+
+the n-representative
+
+    The n-representative is the first n bits of a number, up to and
+    including the rightmost 1. For example: The n-representative of
+    '(0 1 1) is '(0 1 1). The n-representative of `(0 ,x 1 0 ,y . ,z)
+    is `(0 ,x 1). The n-representative of `(0 0 ,y . ,z) is ().
+
+ground values
+
+    Ground values are values which contain no variables. For example
+    '(_.0 ()) is not a ground value. '(0 1) is a ground value.
+   
+The "rules"
+-------------------------------------------------------------------------
+
+The Law of Fresh
+
+   If 'x' is fresh, then (== v x) succeeds and associates 'x' with 'v'.
+
+The Law of ==
+
+   (== v w) is the same as (== w v)
+
+The Law of conde
+
+   To get more values from conde, pretend that the successful conde
+   line has failed, refreshing all variables that got an association
+   from that line.
+
+The Law of condi
+
+   condi behaves like conde, except that its values are interleaved.
+
+The Law of conda
+
+   If the question of a conda line succeeds, pretend that the
+   remaining conda lines have been replaced by a single (else fail).
+
+The Law of condu
+
+   condu behaves like conda, except that a successful question
+   succeeds once.
+
+The Commandments
+--------------------------------------------------------------------------
+
+The First Commandment
+
+   To transform a function whose value is a Boolean into a function
+   whose value is a goal, replace cond with conde und unnest each
+   question and answer. Unnest the answer #t (or #f) by replacing it
+   with 'succeed' (or 'fail'). 
+
+The Second Commandment
+
+   To transform a function whose value is not a Boolean into a
+   function whose value is a goal, add an extra argument to hold its
+   value, replace cond with conde, and unnest each question and
+   answer.
+
+The Third Commandment
+
+   If prior to determining the question of a conda line a variable is
+   fresh, it must remain fresh in the question of that line.
